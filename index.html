@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ad Library — Mira Media</title>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500;1,600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --espresso: #241611;
+    --espresso-mid: #3d261d;
+    --cream: #F5F0E8;
+    --cream-dark: #EDE7DA;
+    --cream-darker: #DDD5C5;
+    --warm-mid: #9A8E7E;
+    --warm-light: #C4B8A6;
+    --white: #FDFAF5;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Jost', sans-serif;
+    background: var(--cream);
+    color: var(--espresso);
+    min-height: 100vh;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(245,240,232,0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--cream-darker);
+    padding: 0 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 68px;
+  }
+
+  .logo-wrap {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .logo-svg {
+    height: 32px;
+    width: auto;
+  }
+
+  .logo-divider {
+    width: 1px;
+    height: 20px;
+    background: var(--cream-darker);
+  }
+
+  .logo-label {
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--warm-mid);
+  }
+
+  .nav-right {
+    font-family: 'Jost', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--warm-mid);
+  }
+
+  /* HERO */
+  .hero {
+    padding: 5rem 2.5rem 3.5rem;
+    max-width: 1240px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: end;
+  }
+
+  .hero-left {}
+
+  .hero-eyebrow {
+    font-family: 'Jost', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--warm-mid);
+    margin-bottom: 1.25rem;
+  }
+
+  .hero h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: clamp(3rem, 5vw, 4.5rem);
+    font-weight: 500;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    color: var(--espresso);
+  }
+
+  .hero h1 span {
+    font-style: normal;
+    font-weight: 400;
+    display: block;
+    font-size: 0.72em;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-family: 'Jost', sans-serif;
+    color: var(--warm-mid);
+    margin-bottom: 0.4rem;
+  }
+
+  .hero-right {
+    padding-bottom: 0.5rem;
+  }
+
+  .hero-right p {
+    font-size: 0.9rem;
+    font-weight: 300;
+    color: var(--warm-mid);
+    line-height: 1.8;
+    max-width: 340px;
+    margin-left: auto;
+    border-left: 1px solid var(--cream-darker);
+    padding-left: 1.5rem;
+  }
+
+  /* FILTERS */
+  .filters-section {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 2.5rem 2.5rem;
+    border-bottom: 1px solid var(--cream-darker);
+    display: flex;
+    gap: 3rem;
+    align-items: flex-start;
+  }
+
+  .filter-group {}
+
+  .filter-label {
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--warm-light);
+    margin-bottom: 0.75rem;
+  }
+
+  .filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px;
+    border-radius: 2px;
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: 1px solid var(--cream-darker);
+    background: transparent;
+    color: var(--warm-mid);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Jost', sans-serif;
+  }
+
+  .chip:hover {
+    border-color: var(--espresso);
+    color: var(--espresso);
+  }
+
+  .chip.active {
+    background: var(--espresso);
+    border-color: var(--espresso);
+    color: var(--cream);
+  }
+
+  .chip-pip {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* COUNT BAR */
+  .count-bar {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 1.5rem 2.5rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .count-text {
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--warm-light);
+  }
+
+  .count-text strong {
+    color: var(--espresso);
+    font-weight: 500;
+  }
+
+  /* GRID */
+  .grid {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 2.5rem 6rem;
+    columns: 3;
+    column-gap: 1.5rem;
+  }
+
+  @media (max-width: 960px) { .grid { columns: 2; } }
+  @media (max-width: 580px) { .grid { columns: 1; } }
+
+  /* AD CARD */
+  .ad-card {
+    break-inside: avoid;
+    margin-bottom: 1.5rem;
+    background: var(--white);
+    border: 1px solid var(--cream-darker);
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    display: block;
+  }
+
+  .ad-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(36,22,17,0.1);
+  }
+
+  .ad-card.hidden { display: none; }
+
+  .ad-img-wrap {
+    width: 100%;
+    background: var(--cream-dark);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .ad-img-wrap img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.35s ease;
+  }
+
+  .ad-card:hover .ad-img-wrap img { transform: scale(1.03); }
+
+  .placeholder-img {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--cream-dark);
+    color: var(--cream-darker);
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1.4rem;
+    letter-spacing: 0.1em;
+  }
+
+  .ad-meta {
+    padding: 14px 16px 16px;
+    border-top: 1px solid var(--cream-darker);
+  }
+
+  .ad-tags {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+
+  .tag {
+    font-size: 0.6rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    padding: 3px 7px;
+    text-transform: uppercase;
+    border: 1px solid;
+  }
+
+  .tag-meta    { color: #1255B0; border-color: #1255B0; background: rgba(18,85,176,0.05); }
+  .tag-google  { color: #B83025; border-color: #B83025; background: rgba(184,48,37,0.05); }
+  .tag-tiktok  { color: #555; border-color: #aaa; background: rgba(0,0,0,0.03); }
+  .tag-linkedin{ color: #085094; border-color: #085094; background: rgba(8,80,148,0.05); }
+  .tag-b2c     { color: #5B3BAF; border-color: #5B3BAF; background: rgba(91,59,175,0.05); }
+  .tag-b2b     { color: #9A4020; border-color: #9A4020; background: rgba(154,64,32,0.05); }
+  .tag-d2c     { color: #9A3560; border-color: #9A3560; background: rgba(154,53,96,0.05); }
+
+  .ad-title {
+    font-family: 'Jost', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--warm-mid);
+    line-height: 1.4;
+    letter-spacing: 0.02em;
+  }
+
+  /* EMPTY STATE */
+  .empty {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 5rem 2.5rem;
+    text-align: center;
+    display: none;
+  }
+
+  .empty-rule {
+    width: 40px;
+    height: 1px;
+    background: var(--cream-darker);
+    margin: 0 auto 1.5rem;
+  }
+
+  .empty h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1.6rem;
+    color: var(--warm-mid);
+    margin-bottom: 0.5rem;
+  }
+
+  .empty p {
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--warm-light);
+  }
+
+  /* LIGHTBOX */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(36,22,17,0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    padding: 2rem;
+  }
+
+  .lightbox.open { opacity: 1; pointer-events: all; }
+
+  .lightbox-inner {
+    max-width: 600px;
+    width: 100%;
+    background: var(--white);
+    border: 1px solid var(--cream-darker);
+    transform: translateY(12px);
+    transition: transform 0.25s ease;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .lightbox.open .lightbox-inner { transform: translateY(0); }
+
+  .lightbox-img img { width: 100%; height: auto; display: block; }
+
+  .lightbox-placeholder {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--cream-dark);
+    color: var(--cream-darker);
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 2rem;
+    letter-spacing: 0.1em;
+  }
+
+  .lightbox-body {
+    padding: 1.25rem 1.5rem 1.75rem;
+    border-top: 1px solid var(--cream-darker);
+  }
+
+  .lightbox-tags { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+
+  .lightbox-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: var(--espresso);
+    margin-bottom: 6px;
+  }
+
+  .lightbox-note {
+    font-size: 0.82rem;
+    font-weight: 300;
+    color: var(--warm-mid);
+    line-height: 1.7;
+    letter-spacing: 0.01em;
+  }
+
+  .lightbox-close {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    width: 36px;
+    height: 36px;
+    background: var(--cream);
+    border: 1px solid var(--cream-darker);
+    color: var(--espresso);
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+    font-family: 'Jost', sans-serif;
+    letter-spacing: 0.05em;
+  }
+
+  .lightbox-close:hover { background: var(--cream-darker); }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--cream-darker);
+    padding: 1.75rem 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--cream-dark);
+  }
+
+  .footer-logo-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .footer-svg { height: 20px; width: auto; opacity: 0.4; }
+
+  .footer-note {
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--warm-light);
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo-wrap">
+    <svg class="logo-svg" viewBox="0 0 180 255" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M26.1511 92.6928C28.5587 83.1318 29.4422 72.4413 37.308 63.5861C40.0473 61.0729 44.0407 61.1236 46.4745 64.0754C48.9439 66.8356 50.3429 70.589 51.4814 74.1896C53.687 81.4995 54.8236 88.9901 55.7852 96.4997C56.5561 102.798 57.1429 109.144 57.5994 115.506C60.0969 100.342 62.6097 84.9501 65.565 69.6974C67.6575 58.9248 69.8811 48.28 72.7599 37.5494C74.1784 32.3283 75.8057 26.8464 77.9037 21.6236C80.026 16.7064 82.7147 9.98369 88.0126 8.59039C91.2499 7.89128 94.0384 11.1609 95.4812 14.6113C96.9283 17.9191 97.7747 21.6212 98.4192 25.0134C99.7012 31.9815 100.324 38.8739 100.86 45.714C101.92 59.2604 102.242 73.188 103.557 85.3923C103.718 86.785 103.943 88.3583 104.159 89.475C104.425 90.9445 104.532 90.6993 105.09 89.4649C107.135 84.8229 108.991 78.4038 110.701 72.2519C114.143 59.6412 117.095 47.0337 120.136 33.6763C122.471 23.3918 124.704 13.2339 127.076 2.17343C127.236 1.42994 127.534 0.79102 127.912 0.400539C128.289 0.0100749 128.715 -0.100931 129.097 0.0940843C129.478 0.289178 129.786 0.775235 129.954 1.44472C130.121 2.11406 130.134 2.91186 129.997 3.66703C127.943 14.9287 126.008 25.2942 123.946 35.8215C121.24 49.5059 118.612 62.4006 115.337 75.7601C113.656 82.3969 112.044 88.9603 109.345 95.6908C108.971 96.5842 108.596 97.4018 108.209 98.1526C107.714 99.1085 107.118 100.09 106.482 100.851C105.884 101.614 104.649 102.653 103.563 102.642C102.361 102.753 101.147 101.566 100.628 100.688C98.3272 96.4568 98.1582 92.8142 97.5653 89.3882C95.7729 75.5056 95.2703 62.1304 94.0157 49.2346C93.4065 42.8244 92.6873 36.4758 91.5801 31.0426C88.2755 13.3961 82.3676 32.0846 79.7383 42.9466C77.2277 52.6834 75.1584 62.9303 73.2046 73.3608C69.2914 94.2701 66.1712 115.423 62.4374 137.231C61.8697 140.414 61.2944 143.69 60.4625 147.289C60.3336 147.836 60.2029 148.364 60.0636 148.885C59.9939 149.145 59.9215 149.405 59.8458 149.665C59.8041 149.808 59.7823 149.884 59.7177 150.096C59.6555 150.299 59.5903 150.505 59.5204 150.715C59.3802 151.134 59.2228 151.572 59.0218 152.053C58.921 152.294 58.8088 152.546 58.6781 152.812C58.6103 152.95 58.5504 153.069 58.4592 153.238C58.3167 153.5 58.1536 153.778 57.9592 154.064C57.2686 155.17 55.5699 156.702 53.9622 155.923C52.6402 155.314 51.9599 153.827 51.5975 152.826C51.4126 152.309 51.2806 151.803 51.1916 151.413C51.1402 151.189 51.0964 150.974 51.0574 150.766C50.9797 150.351 50.9207 149.963 50.8714 149.585C50.7763 148.875 50.701 147.951 50.678 147.611C50.6111 146.67 50.5676 145.682 50.5368 144.587C50.1438 129.926 49.4101 115.288 47.8232 101.571C45.3006 75.8705 38.9868 69.706 32.9836 96.6299C31.0471 105.369 29.4489 114.633 27.9916 123.935C26.5359 133.27 25.242 142.64 24.0011 152.177C23.383 156.925 22.7907 161.63 22.1881 166.419C21.8732 168.922 21.5895 171.176 21.2535 173.712C21.2129 174.016 21.1734 174.31 21.1347 174.591C21.0958 174.874 21.0406 175.277 20.9958 175.592C20.9494 175.921 20.9046 176.23 20.8603 176.523C20.8136 176.835 20.7406 177.316 20.6783 177.679C20.645 177.875 20.6142 178.047 20.5724 178.268C20.4922 178.675 20.4338 179.04 20.2065 179.815C20.1457 180.015 20.07 180.25 19.9521 180.55C19.9225 180.625 19.89 180.705 19.8538 180.789C19.8502 180.797 19.6981 181.157 19.513 181.48C19.1631 182.106 18.3512 183.259 17.2026 183.238C16.052 183.203 15.3707 181.953 15.1113 181.272C14.8292 180.533 14.7563 180.053 14.6925 179.687C14.6546 179.441 14.6668 179.512 14.6579 179.449C14.6527 179.41 14.648 179.372 14.6435 179.336C14.6347 179.263 14.6271 179.195 14.6205 179.131C14.5699 178.622 14.5609 178.297 14.5518 177.97C14.548 177.809 14.546 177.653 14.5451 177.496C14.5445 177.356 14.5449 177.314 14.5454 177.222C14.5465 177.056 14.5487 176.886 14.5516 176.711C14.5575 176.36 14.5669 175.984 14.579 175.571C14.9486 164.073 15.2136 152.405 15.1121 141.128C15.0521 135.451 14.911 129.893 14.5019 124.542C14.3042 121.977 14.0103 119.259 13.5982 117.119C12.8713 113.385 11.9495 112.862 10.2643 116.301C9.33404 118.081 8.44726 120.243 7.60587 122.485C5.92052 127.003 4.39551 131.891 2.91778 136.819C2.70662 137.525 2.36916 138.09 1.97216 138.383C1.57526 138.675 1.1523 138.673 0.795326 138.375C0.438328 138.077 0.174638 137.506 0.0610567 136.788C-0.0525228 136.069 -0.00545832 135.262 0.184056 134.539C1.53951 129.384 2.95339 124.22 4.64896 119.134C5.50466 116.595 6.41525 114.081 7.57399 111.617C11.5479 104.035 15.3862 104.652 17.6824 113.282C18.3386 116.167 18.7404 119.244 19.0481 122.079C19.4144 125.564 19.6647 129.01 19.8545 132.46C20.3037 128.91 20.7738 125.358 21.2705 121.794C22.6283 112.114 24.1427 102.407 26.1511 92.6928ZM20.4736 176.065C20.4743 176.077 20.4755 176.059 20.47 175.966C20.4712 176.002 20.4721 176.035 20.4736 176.065Z" fill="#241611"/>
+      <path d="M76.0605 164.454C78.4682 154.893 79.3517 144.203 87.2174 135.348C89.9567 132.834 93.9502 132.885 96.384 135.837C98.8534 138.597 100.252 142.351 101.391 145.951C103.596 153.261 104.733 160.752 105.695 168.261C106.466 174.559 107.052 180.906 107.509 187.268C110.006 172.103 112.519 156.712 115.474 141.459C117.567 130.686 119.791 120.041 122.669 109.311C124.088 104.09 125.715 98.6079 127.813 93.3851C129.935 88.4679 132.624 81.7452 137.922 80.3519C141.159 79.6527 143.948 82.9224 145.391 86.3728C146.838 89.6806 147.684 93.3827 148.329 96.7749C149.611 103.743 150.233 110.635 150.769 117.475C151.83 131.022 152.152 144.95 153.466 157.154C153.627 158.546 153.852 160.12 154.069 161.236C154.335 162.706 154.442 162.461 154.999 161.226C157.044 156.584 158.901 150.165 160.61 144.013C164.053 131.403 167.005 118.795 170.046 105.438C172.381 95.1532 174.614 84.9954 176.985 73.9349C177.145 73.1914 177.443 72.5525 177.821 72.162C178.199 71.7715 178.625 71.6605 179.006 71.8556C179.387 72.0506 179.695 72.5367 179.863 73.2062C180.031 73.8755 180.044 74.6733 179.907 75.4285C177.852 86.6902 175.918 97.0556 173.855 107.583C171.15 121.267 168.522 134.162 165.247 147.522C163.565 154.158 161.953 160.722 159.254 167.452C158.88 168.346 158.506 169.163 158.119 169.914C157.624 170.87 157.027 171.852 156.392 172.613C155.794 173.375 154.558 174.415 153.472 174.404C152.271 174.515 151.056 173.328 150.537 172.45C148.237 168.218 148.068 164.576 147.475 161.15C145.682 147.267 145.18 133.892 143.925 120.996C143.316 114.586 142.597 108.237 141.49 102.804C138.185 85.1576 132.277 103.846 129.648 114.708C127.137 124.445 125.068 134.692 123.114 145.122C119.201 166.032 116.081 187.185 112.347 208.992C111.779 212.176 111.204 215.452 110.372 219.05C110.243 219.597 110.112 220.125 109.973 220.646C109.903 220.907 109.831 221.166 109.755 221.427C109.714 221.57 109.692 221.646 109.627 221.858C109.565 222.061 109.5 222.266 109.43 222.476C109.29 222.896 109.132 223.333 108.931 223.815C108.83 224.055 108.718 224.307 108.588 224.574C108.52 224.711 108.46 224.83 108.369 224.999C108.226 225.262 108.063 225.539 107.869 225.825C107.178 226.932 105.479 228.463 103.872 227.685C102.55 227.076 101.869 225.588 101.507 224.588C101.322 224.07 101.19 223.564 101.101 223.175C101.05 222.951 101.006 222.736 100.967 222.528C100.889 222.112 100.83 221.725 100.781 221.347C100.686 220.636 100.61 219.712 100.587 219.373C100.521 218.432 100.477 217.443 100.446 216.349C100.053 201.688 99.3196 187.049 97.7327 173.333C95.21 147.632 88.8963 141.468 82.8931 168.391C80.9566 177.13 79.3583 186.394 77.9011 195.697C76.4453 205.031 75.1515 214.402 73.9105 223.938C73.2924 228.686 72.7002 233.391 72.0975 238.181C71.7827 240.684 71.499 242.938 71.163 245.474C71.1223 245.778 71.0828 246.071 71.0441 246.353C71.0053 246.636 70.95 247.039 70.9053 247.354C70.8589 247.682 70.814 247.992 70.7697 248.285C70.7231 248.596 70.6501 249.077 70.5878 249.441C70.5545 249.636 70.5237 249.809 70.4819 250.029C70.4017 250.436 70.3433 250.801 70.116 251.577C70.0551 251.777 69.9794 252.011 69.8616 252.312C69.832 252.387 69.7994 252.466 69.7633 252.55C69.7597 252.558 69.6076 252.918 69.4224 253.242C69.0725 253.868 68.2606 255.021 67.112 255C65.9615 254.964 65.2801 253.715 65.0207 253.034C64.7387 252.295 64.6657 251.815 64.602 251.448C64.5641 251.202 64.5763 251.274 64.5673 251.211C64.5621 251.172 64.5574 251.134 64.553 251.097C64.5441 251.025 64.5365 250.956 64.5299 250.892C64.4793 250.384 64.4703 250.058 64.4613 249.731C64.4575 249.57 64.4554 249.414 64.4545 249.257C64.4539 249.118 64.4544 249.075 64.4548 248.983C64.4559 248.817 64.4581 248.648 64.4611 248.472C64.467 248.121 64.4763 247.745 64.4885 247.333C64.8581 235.834 65.1231 224.166 65.0216 212.889C64.9615 207.212 64.8205 201.654 64.4113 196.303C64.2137 193.739 63.9198 191.021 63.5077 188.881C62.7807 185.147 61.859 184.623 60.1738 188.062C59.2435 189.843 58.3567 192.004 57.5153 194.247C55.83 198.765 54.305 203.653 52.8272 208.581C52.6161 209.287 52.2786 209.852 51.8816 210.144C51.4847 210.437 51.0617 210.435 50.7048 210.137C50.3478 209.839 50.0841 209.268 49.9705 208.549C49.8569 207.831 49.904 207.024 50.0935 206.3C51.449 201.145 52.8628 195.981 54.5584 190.896C55.4141 188.357 56.3247 185.842 57.4834 183.379C61.4573 175.796 65.2957 176.413 67.5919 185.044C68.248 187.928 68.6499 191.005 68.9575 193.84C69.3239 197.326 69.5742 200.772 69.7639 204.221C70.2132 200.672 70.6832 197.119 71.1799 193.555C72.5377 183.876 74.0522 174.169 76.0605 164.454ZM70.3831 247.827C70.3837 247.838 70.3849 247.821 70.3794 247.728C70.3807 247.764 70.3816 247.797 70.3831 247.827Z" fill="#241611"/>
+    </svg>
+    <div class="logo-divider"></div>
+    <span class="logo-label">Ad Library</span>
+  </div>
+  <div class="nav-right">Mira Media Agency</div>
+</nav>
+
+<section class="hero">
+  <div class="hero-left">
+    <p class="hero-eyebrow">Curated creative</p>
+    <h1>Ad inspiration,<br>crafted with intent.</h1>
+  </div>
+  <div class="hero-right">
+    <p>A living library of high-performing ads across platforms and industries. Filter to find what resonates — and bring it to your next brief.</p>
+  </div>
+</section>
+
+<div class="filters-section">
+  <div class="filter-group">
+    <div class="filter-label">Platform</div>
+    <div class="filter-row" id="platform-filters">
+      <button class="chip active" data-platform="all">All</button>
+      <button class="chip" data-platform="Meta"><span class="chip-pip" style="background:#1877F2"></span>Meta</button>
+      <button class="chip" data-platform="Google"><span class="chip-pip" style="background:#EA4335"></span>Google</button>
+      <button class="chip" data-platform="TikTok"><span class="chip-pip" style="background:#888"></span>TikTok</button>
+      <button class="chip" data-platform="LinkedIn"><span class="chip-pip" style="background:#0A66C2"></span>LinkedIn</button>
+    </div>
+  </div>
+  <div class="filter-group">
+    <div class="filter-label">Industry</div>
+    <div class="filter-row" id="industry-filters">
+      <button class="chip active" data-industry="all">All</button>
+      <button class="chip" data-industry="B2C"><span class="chip-pip" style="background:#5B3BAF"></span>B2C</button>
+      <button class="chip" data-industry="B2B"><span class="chip-pip" style="background:#9A4020"></span>B2B</button>
+      <button class="chip" data-industry="D2C"><span class="chip-pip" style="background:#9A3560"></span>D2C</button>
+    </div>
+  </div>
+</div>
+
+<div class="count-bar">
+  <div class="count-text"><strong id="visible-count">6</strong> ads</div>
+</div>
+
+<div class="grid" id="ad-grid">
+
+  <div class="ad-card" data-platform="Meta" data-industry="D2C" data-title="Bold product hero" data-note="Strong single-product focus with lifestyle hook. High contrast, minimal copy works especially well for scroll-stopping on Meta feeds.">
+    <div class="ad-img-wrap"><div class="placeholder-img" style="height:320px">Ad preview</div></div>
+    <div class="ad-meta">
+      <div class="ad-tags"><span class="tag tag-meta">Meta</span><span class="tag tag-d2c">D2C</span></div>
+      <div class="ad-title">Bold product hero</div>
+    </div>
+  </div>
+
+  <div class="ad-card" data-platform="Google" data-industry="B2B" data-title="Comparison table" data-note="Comparison format performs strongly for B2B — helps prospects self-qualify quickly and reduces friction in the decision cycle.">
+    <div class="ad-img-wrap"><div class="placeholder-img" style="height:210px">Ad preview</div></div>
+    <div class="ad-meta">
+      <div class="ad-tags"><span class="tag tag-google">Google</span><span class="tag tag-b2b">B2B</span></div>
+      <div class="ad-title">Comparison table</div>
+    </div>
+  </div>
+
+  <div class="ad-card" data-platform="TikTok" data-industry="B2C" data-title="UGC-style hook" data-note="Raw, authentic feel. The first two seconds carry the full weight — pure pattern interrupt. Works best when the hook is specific and unexpected.">
+    <div class="ad-img-wrap"><div class="placeholder-img" style="height:390px">Ad preview</div></div>
+    <div class="ad-meta">
+      <div class="ad-tags"><span class="tag tag-tiktok">TikTok</span><span class="tag tag-b2c">B2C</span></div>
+      <div class="ad-title">UGC-style hook</div>
+    </div>
+  </div>
+
+  <div class="ad-card" data-platform="LinkedIn" data-industry="B2B" data-title="Thought leadership carousel" data-note="Carousel format drives strong dwell time on LinkedIn. Each slide should build on a single insight — not try to carry multiple.">
+    <div class="ad-img-wrap"><div class="placeholder-img" style="height:270px">Ad preview</div></div>
+    <div class="ad-meta">
+      <div class="ad-tags"><span class="tag tag-linkedin">LinkedIn</span><span class="tag tag-b2b">B2B</span></div>
+      <div class="ad-title">Thought leadership carousel</div>
+    </div>
+  </div>
+
+  <div class="ad-card" data-platform="Meta" data-industry="B2C" data-title="Social proof testimonial" data-note="Customer quote front and centre. Trust signal works especially well for health, wellness, and subscription verticals where credibility is the barrier.">
+    <div class="ad-img-wrap"><div class="placeholder-img" style="height:255px">Ad preview</div></div>
+    <div class="ad-meta">
+      <div class="ad-tags"><span class="tag tag-meta">Meta</span><span class="tag tag-b2c">B2C</span></div>
+      <div class="ad-title">Social proof testimonial</div>
+    </div>
+  </div>
+
+  <div class="ad-card" data-platform="Meta" data-industry="D2C" data-title="Before / After split" data-note="Classic high-intent format. Works best with a clear, relatable transformation — the 'after' needs to be something the viewer can genuinely imagine for themselves.">
+    <div class="ad-img-wrap"><div class="placeholder-img" style="height:340px">Ad preview</div></div>
+    <div class="ad-meta">
+      <div class="ad-tags"><span class="tag tag-meta">Meta</span><span class="tag tag-d2c">D2C</span></div>
+      <div class="ad-title">Before / After split</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="empty" id="empty-state">
+  <div class="empty-rule"></div>
+  <h3>Nothing here yet.</h3>
+  <p>Try a different filter combination.</p>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-inner">
+    <div class="lightbox-img" id="lb-img"></div>
+    <div class="lightbox-body">
+      <div class="lightbox-tags" id="lb-tags"></div>
+      <div class="lightbox-title" id="lb-title"></div>
+      <div class="lightbox-note" id="lb-note"></div>
+    </div>
+  </div>
+  <button class="lightbox-close" id="lb-close">✕</button>
+</div>
+
+<footer>
+  <div class="footer-logo-wrap">
+    <svg class="footer-svg" viewBox="0 0 180 255" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M26.1511 92.6928C28.5587 83.1318 29.4422 72.4413 37.308 63.5861C40.0473 61.0729 44.0407 61.1236 46.4745 64.0754C48.9439 66.8356 50.3429 70.589 51.4814 74.1896C53.687 81.4995 54.8236 88.9901 55.7852 96.4997C56.5561 102.798 57.1429 109.144 57.5994 115.506C60.0969 100.342 62.6097 84.9501 65.565 69.6974C67.6575 58.9248 69.8811 48.28 72.7599 37.5494C74.1784 32.3283 75.8057 26.8464 77.9037 21.6236C80.026 16.7064 82.7147 9.98369 88.0126 8.59039C91.2499 7.89128 94.0384 11.1609 95.4812 14.6113C96.9283 17.9191 97.7747 21.6212 98.4192 25.0134C99.7012 31.9815 100.324 38.8739 100.86 45.714C101.92 59.2604 102.242 73.188 103.557 85.3923C103.718 86.785 103.943 88.3583 104.159 89.475C104.425 90.9445 104.532 90.6993 105.09 89.4649C107.135 84.8229 108.991 78.4038 110.701 72.2519C114.143 59.6412 117.095 47.0337 120.136 33.6763C122.471 23.3918 124.704 13.2339 127.076 2.17343C127.236 1.42994 127.534 0.79102 127.912 0.400539C128.289 0.0100749 128.715 -0.100931 129.097 0.0940843C129.478 0.289178 129.786 0.775235 129.954 1.44472C130.121 2.11406 130.134 2.91186 129.997 3.66703C127.943 14.9287 126.008 25.2942 123.946 35.8215C121.24 49.5059 118.612 62.4006 115.337 75.7601C113.656 82.3969 112.044 88.9603 109.345 95.6908C108.971 96.5842 108.596 97.4018 108.209 98.1526C107.714 99.1085 107.118 100.09 106.482 100.851C105.884 101.614 104.649 102.653 103.563 102.642C102.361 102.753 101.147 101.566 100.628 100.688C98.3272 96.4568 98.1582 92.8142 97.5653 89.3882C95.7729 75.5056 95.2703 62.1304 94.0157 49.2346C93.4065 42.8244 92.6873 36.4758 91.5801 31.0426C88.2755 13.3961 82.3676 32.0846 79.7383 42.9466C77.2277 52.6834 75.1584 62.9303 73.2046 73.3608C69.2914 94.2701 66.1712 115.423 62.4374 137.231C61.8697 140.414 61.2944 143.69 60.4625 147.289C60.3336 147.836 60.2029 148.364 60.0636 148.885C59.9939 149.145 59.9215 149.405 59.8458 149.665C59.8041 149.808 59.7823 149.884 59.7177 150.096C59.6555 150.299 59.5903 150.505 59.5204 150.715C59.3802 151.134 59.2228 151.572 59.0218 152.053C58.921 152.294 58.8088 152.546 58.6781 152.812C58.6103 152.95 58.5504 153.069 58.4592 153.238C58.3167 153.5 58.1536 153.778 57.9592 154.064C57.2686 155.17 55.5699 156.702 53.9622 155.923C52.6402 155.314 51.9599 153.827 51.5975 152.826C51.4126 152.309 51.2806 151.803 51.1916 151.413C51.1402 151.189 51.0964 150.974 51.0574 150.766C50.9797 150.351 50.9207 149.963 50.8714 149.585C50.7763 148.875 50.701 147.951 50.678 147.611C50.6111 146.67 50.5676 145.682 50.5368 144.587C50.1438 129.926 49.4101 115.288 47.8232 101.571C45.3006 75.8705 38.9868 69.706 32.9836 96.6299C31.0471 105.369 29.4489 114.633 27.9916 123.935C26.5359 133.27 25.242 142.64 24.0011 152.177C23.383 156.925 22.7907 161.63 22.1881 166.419C21.8732 168.922 21.5895 171.176 21.2535 173.712C21.2129 174.016 21.1734 174.31 21.1347 174.591C21.0958 174.874 21.0406 175.277 20.9958 175.592C20.9494 175.921 20.9046 176.23 20.8603 176.523C20.8136 176.835 20.7406 177.316 20.6783 177.679C20.645 177.875 20.6142 178.047 20.5724 178.268C20.4922 178.675 20.4338 179.04 20.2065 179.815C20.1457 180.015 20.07 180.25 19.9521 180.55C19.9225 180.625 19.89 180.705 19.8538 180.789C19.8502 180.797 19.6981 181.157 19.513 181.48C19.1631 182.106 18.3512 183.259 17.2026 183.238C16.052 183.203 15.3707 181.953 15.1113 181.272C14.8292 180.533 14.7563 180.053 14.6925 179.687C14.6546 179.441 14.6668 179.512 14.6579 179.449C14.6527 179.41 14.648 179.372 14.6435 179.336C14.6347 179.263 14.6271 179.195 14.6205 179.131C14.5699 178.622 14.5609 178.297 14.5518 177.97C14.548 177.809 14.546 177.653 14.5451 177.496C14.5445 177.356 14.5449 177.314 14.5454 177.222C14.5465 177.056 14.5487 176.886 14.5516 176.711C14.5575 176.36 14.5669 175.984 14.579 175.571C14.9486 164.073 15.2136 152.405 15.1121 141.128C15.0521 135.451 14.911 129.893 14.5019 124.542C14.3042 121.977 14.0103 119.259 13.5982 117.119C12.8713 113.385 11.9495 112.862 10.2643 116.301C9.33404 118.081 8.44726 120.243 7.60587 122.485C5.92052 127.003 4.39551 131.891 2.91778 136.819C2.70662 137.525 2.36916 138.09 1.97216 138.383C1.57526 138.675 1.1523 138.673 0.795326 138.375C0.438328 138.077 0.174638 137.506 0.0610567 136.788C-0.0525228 136.069 -0.00545832 135.262 0.184056 134.539C1.53951 129.384 2.95339 124.22 4.64896 119.134C5.50466 116.595 6.41525 114.081 7.57399 111.617C11.5479 104.035 15.3862 104.652 17.6824 113.282C18.3386 116.167 18.7404 119.244 19.0481 122.079C19.4144 125.564 19.6647 129.01 19.8545 132.46C20.3037 128.91 20.7738 125.358 21.2705 121.794C22.6283 112.114 24.1427 102.407 26.1511 92.6928ZM20.4736 176.065C20.4743 176.077 20.4755 176.059 20.47 175.966C20.4712 176.002 20.4721 176.035 20.4736 176.065Z" fill="#241611"/>
+      <path d="M76.0605 164.454C78.4682 154.893 79.3517 144.203 87.2174 135.348C89.9567 132.834 93.9502 132.885 96.384 135.837C98.8534 138.597 100.252 142.351 101.391 145.951C103.596 153.261 104.733 160.752 105.695 168.261C106.466 174.559 107.052 180.906 107.509 187.268C110.006 172.103 112.519 156.712 115.474 141.459C117.567 130.686 119.791 120.041 122.669 109.311C124.088 104.09 125.715 98.6079 127.813 93.3851C129.935 88.4679 132.624 81.7452 137.922 80.3519C141.159 79.6527 143.948 82.9224 145.391 86.3728C146.838 89.6806 147.684 93.3827 148.329 96.7749C149.611 103.743 150.233 110.635 150.769 117.475C151.83 131.022 152.152 144.95 153.466 157.154C153.627 158.546 153.852 160.12 154.069 161.236C154.335 162.706 154.442 162.461 154.999 161.226C157.044 156.584 158.901 150.165 160.61 144.013C164.053 131.403 167.005 118.795 170.046 105.438C172.381 95.1532 174.614 84.9954 176.985 73.9349C177.145 73.1914 177.443 72.5525 177.821 72.162C178.199 71.7715 178.625 71.6605 179.006 71.8556C179.387 72.0506 179.695 72.5367 179.863 73.2062C180.031 73.8755 180.044 74.6733 179.907 75.4285C177.852 86.6902 175.918 97.0556 173.855 107.583C171.15 121.267 168.522 134.162 165.247 147.522C163.565 154.158 161.953 160.722 159.254 167.452C158.88 168.346 158.506 169.163 158.119 169.914C157.624 170.87 157.027 171.852 156.392 172.613C155.794 173.375 154.558 174.415 153.472 174.404C152.271 174.515 151.056 173.328 150.537 172.45C148.237 168.218 148.068 164.576 147.475 161.15C145.682 147.267 145.18 133.892 143.925 120.996C143.316 114.586 142.597 108.237 141.49 102.804C138.185 85.1576 132.277 103.846 129.648 114.708C127.137 124.445 125.068 134.692 123.114 145.122C119.201 166.032 116.081 187.185 112.347 208.992C111.779 212.176 111.204 215.452 110.372 219.05C110.243 219.597 110.112 220.125 109.973 220.646C109.903 220.907 109.831 221.166 109.755 221.427C109.714 221.57 109.692 221.646 109.627 221.858C109.565 222.061 109.5 222.266 109.43 222.476C109.29 222.896 109.132 223.333 108.931 223.815C108.83 224.055 108.718 224.307 108.588 224.574C108.52 224.711 108.46 224.83 108.369 224.999C108.226 225.262 108.063 225.539 107.869 225.825C107.178 226.932 105.479 228.463 103.872 227.685C102.55 227.076 101.869 225.588 101.507 224.588C101.322 224.07 101.19 223.564 101.101 223.175C101.05 222.951 101.006 222.736 100.967 222.528C100.889 222.112 100.83 221.725 100.781 221.347C100.686 220.636 100.61 219.712 100.587 219.373C100.521 218.432 100.477 217.443 100.446 216.349C100.053 201.688 99.3196 187.049 97.7327 173.333C95.21 147.632 88.8963 141.468 82.8931 168.391C80.9566 177.13 79.3583 186.394 77.9011 195.697C76.4453 205.031 75.1515 214.402 73.9105 223.938C73.2924 228.686 72.7002 233.391 72.0975 238.181C71.7827 240.684 71.499 242.938 71.163 245.474C71.1223 245.778 71.0828 246.071 71.0441 246.353C71.0053 246.636 70.95 247.039 70.9053 247.354C70.8589 247.682 70.814 247.992 70.7697 248.285C70.7231 248.596 70.6501 249.077 70.5878 249.441C70.5545 249.636 70.5237 249.809 70.4819 250.029C70.4017 250.436 70.3433 250.801 70.116 251.577C70.0551 251.777 69.9794 252.011 69.8616 252.312C69.832 252.387 69.7994 252.466 69.7633 252.55C69.7597 252.558 69.6076 252.918 69.4224 253.242C69.0725 253.868 68.2606 255.021 67.112 255C65.9615 254.964 65.2801 253.715 65.0207 253.034C64.7387 252.295 64.6657 251.815 64.602 251.448C64.5641 251.202 64.5763 251.274 64.5673 251.211C64.5621 251.172 64.5574 251.134 64.553 251.097C64.5441 251.025 64.5365 250.956 64.5299 250.892C64.4793 250.384 64.4703 250.058 64.4613 249.731C64.4575 249.57 64.4554 249.414 64.4545 249.257C64.4539 249.118 64.4544 249.075 64.4548 248.983C64.4559 248.817 64.4581 248.648 64.4611 248.472C64.467 248.121 64.4763 247.745 64.4885 247.333C64.8581 235.834 65.1231 224.166 65.0216 212.889C64.9615 207.212 64.8205 201.654 64.4113 196.303C64.2137 193.739 63.9198 191.021 63.5077 188.881C62.7807 185.147 61.859 184.623 60.1738 188.062C59.2435 189.843 58.3567 192.004 57.5153 194.247C55.83 198.765 54.305 203.653 52.8272 208.581C52.6161 209.287 52.2786 209.852 51.8816 210.144C51.4847 210.437 51.0617 210.435 50.7048 210.137C50.3478 209.839 50.0841 209.268 49.9705 208.549C49.8569 207.831 49.904 207.024 50.0935 206.3C51.449 201.145 52.8628 195.981 54.5584 190.896C55.4141 188.357 56.3247 185.842 57.4834 183.379C61.4573 175.796 65.2957 176.413 67.5919 185.044C68.248 187.928 68.6499 191.005 68.9575 193.84C69.3239 197.326 69.5742 200.772 69.7639 204.221C70.2132 200.672 70.6832 197.119 71.1799 193.555C72.5377 183.876 74.0522 174.169 76.0605 164.454ZM70.3831 247.827C70.3837 247.838 70.3849 247.821 70.3794 247.728C70.3807 247.764 70.3816 247.797 70.3831 247.827Z" fill="#241611"/>
+    </svg>
+    <span class="footer-note">Mira Media Agency</span>
+  </div>
+  <div class="footer-note">Updated automatically via Slack</div>
+</footer>
+
+<script>
+  const cards = document.querySelectorAll('.ad-card');
+  const countEl = document.getElementById('visible-count');
+  const emptyState = document.getElementById('empty-state');
+  const grid = document.getElementById('ad-grid');
+
+  let activePlatform = 'all';
+  let activeIndustry = 'all';
+
+  function filterCards() {
+    let visible = 0;
+    cards.forEach(card => {
+      const show = (activePlatform === 'all' || card.dataset.platform === activePlatform) &&
+                   (activeIndustry === 'all' || card.dataset.industry === activeIndustry);
+      card.classList.toggle('hidden', !show);
+      if (show) visible++;
+    });
+    countEl.textContent = visible;
+    emptyState.style.display = visible === 0 ? 'block' : 'none';
+    grid.style.display = visible === 0 ? 'none' : '';
+  }
+
+  document.getElementById('platform-filters').addEventListener('click', e => {
+    const chip = e.target.closest('[data-platform]');
+    if (!chip) return;
+    document.querySelectorAll('[data-platform]').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    activePlatform = chip.dataset.platform;
+    filterCards();
+  });
+
+  document.getElementById('industry-filters').addEventListener('click', e => {
+    const chip = e.target.closest('[data-industry]');
+    if (!chip) return;
+    document.querySelectorAll('[data-industry]').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    activeIndustry = chip.dataset.industry;
+    filterCards();
+  });
+
+  const lb = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lb-img');
+  const lbTags = document.getElementById('lb-tags');
+  const lbTitle = document.getElementById('lb-title');
+  const lbNote = document.getElementById('lb-note');
+
+  const ptClass = { Meta:'tag-meta', Google:'tag-google', TikTok:'tag-tiktok', LinkedIn:'tag-linkedin' };
+  const inClass = { B2C:'tag-b2c', B2B:'tag-b2b', D2C:'tag-d2c' };
+
+  cards.forEach(card => {
+    card.addEventListener('click', () => {
+      const p = card.dataset.platform, i = card.dataset.industry;
+      const img = card.querySelector('img');
+      if (img) {
+        lbImg.innerHTML = `<img src="${img.src}" alt="">`;
+      } else {
+        lbImg.innerHTML = `<div class="lightbox-placeholder" style="height:280px">Ad preview</div>`;
+      }
+      lbTags.innerHTML = `<span class="tag ${ptClass[p]||''}">${p}</span><span class="tag ${inClass[i]||''}">${i}</span>`;
+      lbTitle.textContent = card.dataset.title || '';
+      lbNote.textContent = card.dataset.note || '';
+      lb.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    });
+  });
+
+  document.getElementById('lb-close').addEventListener('click', closeLb);
+  lb.addEventListener('click', e => { if (e.target === lb) closeLb(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
+
+  function closeLb() {
+    lb.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+</script>
+</body>
+</html>
