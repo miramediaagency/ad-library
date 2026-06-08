@@ -623,7 +623,7 @@
 
   function buildCard(file) {
     const { platform, industry, title } = parseFilename(file.name);
-    const imgUrl = RAW_BASE + encodeURIComponent(file.name);
+    const imgUrl = file.download_url;
 
     const card = document.createElement('div');
     card.className = 'ad-card';
