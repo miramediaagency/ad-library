@@ -623,7 +623,7 @@
 
   function buildCard(file) {
     const { platform, industry, title } = parseFilename(file.name);
-    const imgUrl = file.download_url;
+    const imgUrl = `https://raw.githubusercontent.com/${REPO}/main/${FOLDER}/` + file.name.replace(/ /g, '%20');
 
     const card = document.createElement('div');
     card.className = 'ad-card';
