@@ -322,6 +322,28 @@
     letter-spacing: 0.02em;
   }
 
+  /* LOADING STATE */
+  .loading-state {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 4rem 2.5rem;
+    text-align: center;
+  }
+  .loading-rule {
+    width: 40px;
+    height: 1px;
+    background: var(--cream-darker);
+    margin: 0 auto 1.5rem;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  .loading-text {
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--warm-light);
+  }
+  @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
   /* EMPTY STATE */
   .empty {
     max-width: 1240px;
@@ -519,57 +541,12 @@
   <div class="count-text"><strong id="visible-count">6</strong> ads</div>
 </div>
 
-<div class="grid" id="ad-grid">
-
-  <div class="ad-card" data-platform="Meta" data-industry="D2C" data-title="Bold product hero" data-note="Strong single-product focus with lifestyle hook. High contrast, minimal copy works especially well for scroll-stopping on Meta feeds.">
-    <div class="ad-img-wrap"><div class="placeholder-img" style="height:320px">Ad preview</div></div>
-    <div class="ad-meta">
-      <div class="ad-tags"><span class="tag tag-meta">Meta</span><span class="tag tag-d2c">D2C</span></div>
-      <div class="ad-title">Bold product hero</div>
-    </div>
-  </div>
-
-  <div class="ad-card" data-platform="Google" data-industry="B2B" data-title="Comparison table" data-note="Comparison format performs strongly for B2B — helps prospects self-qualify quickly and reduces friction in the decision cycle.">
-    <div class="ad-img-wrap"><div class="placeholder-img" style="height:210px">Ad preview</div></div>
-    <div class="ad-meta">
-      <div class="ad-tags"><span class="tag tag-google">Google</span><span class="tag tag-b2b">B2B</span></div>
-      <div class="ad-title">Comparison table</div>
-    </div>
-  </div>
-
-  <div class="ad-card" data-platform="TikTok" data-industry="B2C" data-title="UGC-style hook" data-note="Raw, authentic feel. The first two seconds carry the full weight — pure pattern interrupt. Works best when the hook is specific and unexpected.">
-    <div class="ad-img-wrap"><div class="placeholder-img" style="height:390px">Ad preview</div></div>
-    <div class="ad-meta">
-      <div class="ad-tags"><span class="tag tag-tiktok">TikTok</span><span class="tag tag-b2c">B2C</span></div>
-      <div class="ad-title">UGC-style hook</div>
-    </div>
-  </div>
-
-  <div class="ad-card" data-platform="LinkedIn" data-industry="B2B" data-title="Thought leadership carousel" data-note="Carousel format drives strong dwell time on LinkedIn. Each slide should build on a single insight — not try to carry multiple.">
-    <div class="ad-img-wrap"><div class="placeholder-img" style="height:270px">Ad preview</div></div>
-    <div class="ad-meta">
-      <div class="ad-tags"><span class="tag tag-linkedin">LinkedIn</span><span class="tag tag-b2b">B2B</span></div>
-      <div class="ad-title">Thought leadership carousel</div>
-    </div>
-  </div>
-
-  <div class="ad-card" data-platform="Meta" data-industry="B2C" data-title="Social proof testimonial" data-note="Customer quote front and centre. Trust signal works especially well for health, wellness, and subscription verticals where credibility is the barrier.">
-    <div class="ad-img-wrap"><div class="placeholder-img" style="height:255px">Ad preview</div></div>
-    <div class="ad-meta">
-      <div class="ad-tags"><span class="tag tag-meta">Meta</span><span class="tag tag-b2c">B2C</span></div>
-      <div class="ad-title">Social proof testimonial</div>
-    </div>
-  </div>
-
-  <div class="ad-card" data-platform="Meta" data-industry="D2C" data-title="Before / After split" data-note="Classic high-intent format. Works best with a clear, relatable transformation — the 'after' needs to be something the viewer can genuinely imagine for themselves.">
-    <div class="ad-img-wrap"><div class="placeholder-img" style="height:340px">Ad preview</div></div>
-    <div class="ad-meta">
-      <div class="ad-tags"><span class="tag tag-meta">Meta</span><span class="tag tag-d2c">D2C</span></div>
-      <div class="ad-title">Before / After split</div>
-    </div>
-  </div>
-
+<div class="loading-state" id="loading-state">
+  <div class="loading-rule"></div>
+  <p class="loading-text">Loading ad library...</p>
 </div>
+
+<div class="grid" id="ad-grid"></div>
 
 <div class="empty" id="empty-state">
   <div class="empty-rule"></div>
@@ -602,17 +579,86 @@
 </footer>
 
 <script>
-  const cards = document.querySelectorAll('.ad-card');
+  const REPO = 'miramediaagency/ad-library';
+  const FOLDER = 'ads';
+  const RAW_BASE = `https://raw.githubusercontent.com/${REPO}/main/${FOLDER}/`;
+  const API_URL = `https://api.github.com/repos/${REPO}/contents/${FOLDER}`;
+
+  const grid = document.getElementById('ad-grid');
   const countEl = document.getElementById('visible-count');
   const emptyState = document.getElementById('empty-state');
-  const grid = document.getElementById('ad-grid');
+  const loadingState = document.getElementById('loading-state');
+  const lb = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lb-img');
+  const lbTags = document.getElementById('lb-tags');
+  const lbTitle = document.getElementById('lb-title');
+  const lbNote = document.getElementById('lb-note');
+
+  const ptClass = { Meta:'tag-meta', Google:'tag-google', TikTok:'tag-tiktok', LinkedIn:'tag-linkedin' };
+  const inClass = { B2C:'tag-b2c', B2B:'tag-b2b', D2C:'tag-d2c' };
+
+  const PLATFORMS = ['Meta', 'Google', 'TikTok', 'LinkedIn'];
+  const INDUSTRIES = ['B2C', 'B2B', 'D2C'];
 
   let activePlatform = 'all';
   let activeIndustry = 'all';
+  let allCards = [];
+
+  // Parse platform + industry from filename
+  // Expected format: IMG_9940_Meta_B2C_mobile_optimized.jpg
+  function parseFilename(name) {
+    const upper = name.toUpperCase();
+    const platform = PLATFORMS.find(p => upper.includes(p.toUpperCase())) || 'Unknown';
+    const industry = INDUSTRIES.find(i => upper.includes(i.toUpperCase())) || 'Unknown';
+    // Clean display title — strip extension, underscores, known suffixes
+    const title = name
+      .replace(/\.[^.]+$/, '')
+      .replace(/_mobile_optimized|_mobile/gi, '')
+      .replace(new RegExp(`_(${PLATFORMS.join('|')})`, 'gi'), '')
+      .replace(new RegExp(`_(${INDUSTRIES.join('|')})`, 'gi'), '')
+      .replace(/_+/g, ' ')
+      .trim();
+    return { platform, industry, title };
+  }
+
+  function buildCard(file) {
+    const { platform, industry, title } = parseFilename(file.name);
+    const imgUrl = RAW_BASE + encodeURIComponent(file.name);
+
+    const card = document.createElement('div');
+    card.className = 'ad-card';
+    card.dataset.platform = platform;
+    card.dataset.industry = industry;
+    card.dataset.title = title;
+    card.dataset.src = imgUrl;
+
+    card.innerHTML = `
+      <div class="ad-img-wrap">
+        <img src="${imgUrl}" alt="${title}" loading="lazy">
+      </div>
+      <div class="ad-meta">
+        <div class="ad-tags">
+          <span class="tag ${ptClass[platform] || 'tag-platform'}">${platform}</span>
+          <span class="tag ${inClass[industry] || 'tag-platform'}">${industry}</span>
+        </div>
+        <div class="ad-title">${title}</div>
+      </div>`;
+
+    card.addEventListener('click', () => {
+      lbImg.innerHTML = `<img src="${imgUrl}" alt="${title}">`;
+      lbTags.innerHTML = `<span class="tag ${ptClass[platform]||''}">${platform}</span><span class="tag ${inClass[industry]||''}">${industry}</span>`;
+      lbTitle.textContent = title;
+      lbNote.textContent = '';
+      lb.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    });
+
+    return card;
+  }
 
   function filterCards() {
     let visible = 0;
-    cards.forEach(card => {
+    allCards.forEach(card => {
       const show = (activePlatform === 'all' || card.dataset.platform === activePlatform) &&
                    (activeIndustry === 'all' || card.dataset.industry === activeIndustry);
       card.classList.toggle('hidden', !show);
@@ -621,6 +667,39 @@
     countEl.textContent = visible;
     emptyState.style.display = visible === 0 ? 'block' : 'none';
     grid.style.display = visible === 0 ? 'none' : '';
+  }
+
+  async function loadAds() {
+    try {
+      const res = await fetch(API_URL);
+      const files = await res.json();
+      const images = files.filter(f => /\.(jpg|jpeg|png|gif|webp)$/i.test(f.name));
+
+      loadingState.style.display = 'none';
+
+      if (images.length === 0) {
+        emptyState.style.display = 'block';
+        countEl.textContent = '0';
+        return;
+      }
+
+      // Sort newest first (by filename timestamp if present, else alphabetical reverse)
+      images.reverse();
+
+      images.forEach(file => {
+        const card = buildCard(file);
+        allCards.push(card);
+        grid.appendChild(card);
+      });
+
+      countEl.textContent = images.length;
+      filterCards();
+
+    } catch (err) {
+      loadingState.style.display = 'none';
+      emptyState.style.display = 'block';
+      console.error('Failed to load ads:', err);
+    }
   }
 
   document.getElementById('platform-filters').addEventListener('click', e => {
@@ -641,32 +720,6 @@
     filterCards();
   });
 
-  const lb = document.getElementById('lightbox');
-  const lbImg = document.getElementById('lb-img');
-  const lbTags = document.getElementById('lb-tags');
-  const lbTitle = document.getElementById('lb-title');
-  const lbNote = document.getElementById('lb-note');
-
-  const ptClass = { Meta:'tag-meta', Google:'tag-google', TikTok:'tag-tiktok', LinkedIn:'tag-linkedin' };
-  const inClass = { B2C:'tag-b2c', B2B:'tag-b2b', D2C:'tag-d2c' };
-
-  cards.forEach(card => {
-    card.addEventListener('click', () => {
-      const p = card.dataset.platform, i = card.dataset.industry;
-      const img = card.querySelector('img');
-      if (img) {
-        lbImg.innerHTML = `<img src="${img.src}" alt="">`;
-      } else {
-        lbImg.innerHTML = `<div class="lightbox-placeholder" style="height:280px">Ad preview</div>`;
-      }
-      lbTags.innerHTML = `<span class="tag ${ptClass[p]||''}">${p}</span><span class="tag ${inClass[i]||''}">${i}</span>`;
-      lbTitle.textContent = card.dataset.title || '';
-      lbNote.textContent = card.dataset.note || '';
-      lb.classList.add('open');
-      document.body.style.overflow = 'hidden';
-    });
-  });
-
   document.getElementById('lb-close').addEventListener('click', closeLb);
   lb.addEventListener('click', e => { if (e.target === lb) closeLb(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
@@ -675,6 +728,8 @@
     lb.classList.remove('open');
     document.body.style.overflow = '';
   }
+
+  loadAds();
 </script>
 </body>
 </html>
