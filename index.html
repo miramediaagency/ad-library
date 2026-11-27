@@ -146,11 +146,12 @@
     padding: 0 2.5rem 2.5rem;
     border-bottom: 1px solid var(--cream-darker);
     display: flex;
-    gap: 3rem;
+    flex-wrap: wrap;
+    gap: 1.75rem 3rem;
     align-items: flex-start;
   }
 
-  .filter-group {}
+  .filter-group { max-width: 100%; }
 
   .filter-label {
     font-size: 0.62rem;
@@ -313,6 +314,13 @@
   .tag-b2c     { color: #5B3BAF; border-color: #5B3BAF; background: rgba(91,59,175,0.05); }
   .tag-b2b     { color: #9A4020; border-color: #9A4020; background: rgba(154,64,32,0.05); }
   .tag-d2c     { color: #9A3560; border-color: #9A3560; background: rgba(154,53,96,0.05); }
+  .tag-pinterest{ color: #B5121B; border-color: #B5121B; background: rgba(181,18,27,0.05); }
+  .tag-ooh     { color: #2E6F4E; border-color: #2E6F4E; background: rgba(46,111,78,0.06); }
+  .tag-display { color: #7A5A00; border-color: #7A5A00; background: rgba(122,90,0,0.06); }
+  .tag-platform{ color: var(--warm-mid); border-color: var(--warm-light); background: rgba(0,0,0,0.02); }
+  .tag-awareness    { color: #B26A00; border-color: #B26A00; background: rgba(178,106,0,0.06); }
+  .tag-consideration{ color: #4F6B2A; border-color: #4F6B2A; background: rgba(79,107,42,0.06); }
+  .tag-conversion   { color: #1F6F78; border-color: #1F6F78; background: rgba(31,111,120,0.06); }
 
   .ad-title {
     font-family: 'Jost', sans-serif;
@@ -521,10 +529,6 @@
     <div class="filter-label">Platform</div>
     <div class="filter-row" id="platform-filters">
       <button class="chip active" data-platform="all">All</button>
-      <button class="chip" data-platform="Meta"><span class="chip-pip" style="background:#1877F2"></span>Meta</button>
-      <button class="chip" data-platform="Google"><span class="chip-pip" style="background:#EA4335"></span>Google</button>
-      <button class="chip" data-platform="TikTok"><span class="chip-pip" style="background:#888"></span>TikTok</button>
-      <button class="chip" data-platform="LinkedIn"><span class="chip-pip" style="background:#0A66C2"></span>LinkedIn</button>
     </div>
   </div>
   <div class="filter-group">
@@ -536,10 +540,18 @@
       <button class="chip" data-industry="D2C"><span class="chip-pip" style="background:#9A3560"></span>D2C</button>
     </div>
   </div>
+  <div class="filter-group">
+    <div class="filter-label">Message type</div>
+    <div class="filter-row" id="label-filters">
+      <button class="chip active" data-label="all">All</button>
+      <button class="chip" data-label="Awareness" title="Stops the scroll: a concept, meme or bold hook that is different enough to break up a feed."><span class="chip-pip" style="background:#B26A00"></span>Awareness</button>
+      <button class="chip" data-label="Consideration" title="Educates or builds proof: testimonials, badges, stats, or content like an ebook."><span class="chip-pip" style="background:#4F6B2A"></span>Consideration</button>
+      <button class="chip" data-label="Conversion" title="Pushes a specific action: a demo, free trial or offer."><span class="chip-pip" style="background:#1F6F78"></span>Conversion</button>
+    </div>
+  </div>
 </div>
-
 <div class="count-bar">
-  <div class="count-text"><strong id="visible-count">6</strong> ads</div>
+  <div class="count-text"><strong id="visible-count">&ndash;</strong> ads</div>
 </div>
 
 <div class="loading-state" id="loading-state">
@@ -582,8 +594,51 @@
 <script>
   const REPO = 'miramediaagency/ad-library';
   const FOLDER = 'ads';
-  const RAW_BASE = `https://raw.githubusercontent.com/${REPO}/main/${FOLDER}/`;
   const API_URL = `https://api.github.com/repos/${REPO}/contents/${FOLDER}`;
+  const OVERRIDES_URL = 'labels.json';
+
+  // ---------------------------------------------------------------
+  // PLATFORMS. `core: true` platforms always get a filter button.
+  // Everything else gets a button automatically once an ad uses it.
+  // Add a platform here to give it a name, aliases and a colour.
+  // ---------------------------------------------------------------
+  const PLATFORM_DEFS = [
+    { name: 'Meta',          aliases: ['Facebook', 'Instagram', 'FB', 'IG'], cls: 'tag-meta',      color: '#1877F2', core: true },
+    { name: 'Google',        aliases: ['GoogleAds'],                         cls: 'tag-google',    color: '#EA4335', core: true },
+    { name: 'TikTok',        aliases: [],                                    cls: 'tag-tiktok',    color: '#888',    core: true },
+    { name: 'LinkedIn',      aliases: [],                                    cls: 'tag-linkedin',  color: '#0A66C2', core: true },
+    { name: 'Pinterest',     aliases: [],                                    cls: 'tag-pinterest', color: '#E60023', core: true },
+    { name: 'OOH',           aliases: ['Out of Home', 'OutOfHome'],          cls: 'tag-ooh',       color: '#2E6F4E', core: true },
+    { name: 'Display',       aliases: [],                                    cls: 'tag-display',   color: '#7A5A00', core: true },
+    { name: 'Instacart' }, { name: 'Loblaws' }, { name: 'Walmart' }, { name: 'Amazon' },
+    { name: 'Reddit' }, { name: 'Bing' }, { name: 'YouTube' }, { name: 'Snapchat' },
+    { name: 'Programmatic' },
+    { name: 'Connected TV', aliases: ['CTV', 'ConnectedTV'] },
+    { name: 'Audio' }, { name: 'Podcast' },
+    { name: 'PMAX', aliases: ['Performance Max'] },
+    { name: 'Demand Gen', aliases: ['DemandGen'] },
+    { name: 'GDN' },
+    { name: 'Google Search', aliases: ['GoogleSearch'] },
+    { name: 'TripAdvisor' }
+  ];
+  const INDUSTRIES = ['B2C', 'B2B', 'D2C'];
+  const LABELS = ['Awareness', 'Consideration', 'Conversion'];
+
+  const norm = s => String(s).toLowerCase().replace(/[^a-z0-9]/g, '');
+  const PLATFORM_LOOKUP = {};
+  PLATFORM_DEFS.forEach(def => {
+    PLATFORM_LOOKUP[norm(def.name)] = def;
+    (def.aliases || []).forEach(a => PLATFORM_LOOKUP[norm(a)] = def);
+  });
+  const LABEL_LOOKUP = {};
+  LABELS.forEach(l => LABEL_LOOKUP[norm(l)] = l);
+
+  const platformClass = p => (PLATFORM_LOOKUP[norm(p)] && PLATFORM_LOOKUP[norm(p)].cls) || 'tag-platform';
+  const platformColor = p => (PLATFORM_LOOKUP[norm(p)] && PLATFORM_LOOKUP[norm(p)].color) || '#9A8E7E';
+  const canonPlatform = p => (PLATFORM_LOOKUP[norm(p)] ? PLATFORM_LOOKUP[norm(p)].name : p);
+  const industryClass = i => ({ B2C: 'tag-b2c', B2B: 'tag-b2b', D2C: 'tag-d2c' }[i] || 'tag-platform');
+  const labelClass = l => 'tag-' + l.toLowerCase();
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
   const grid = document.getElementById('ad-grid');
   const countEl = document.getElementById('visible-count');
@@ -595,72 +650,93 @@
   const lbTitle = document.getElementById('lb-title');
   const lbNote = document.getElementById('lb-note');
 
-  const ptClass = { Meta:'tag-meta', Google:'tag-google', TikTok:'tag-tiktok', LinkedIn:'tag-linkedin' };
-  const inClass = { B2C:'tag-b2c', B2B:'tag-b2b', D2C:'tag-d2c' };
-
-  const PLATFORMS = ['Meta', 'Google', 'TikTok', 'LinkedIn'];
-  const INDUSTRIES = ['B2C', 'B2B', 'D2C'];
-
   let activePlatform = 'all';
   let activeIndustry = 'all';
+  let activeLabel = 'all';
   let allCards = [];
+  let OVERRIDES = {};
 
-  // Parse platform + industry from filename
-  // Expected format: IMG_9940_Meta_B2C_mobile_optimized.jpg
+  // ---------------------------------------------------------------
+  // Read platform / industry / message type from the filename.
+  // New ads from Slack look like:
+  //   IMG_9940_Meta_B2C_Awareness-Conversion.jpg
+  // Older ads (and anything listed in labels.json) are handled by
+  // labels.json, which always wins over the filename.
+  // ---------------------------------------------------------------
   function parseFilename(name) {
-    const upper = name.toUpperCase();
-    const platform = PLATFORMS.find(p => upper.includes(p.toUpperCase())) || 'Unknown';
-    const industry = INDUSTRIES.find(i => upper.includes(i.toUpperCase())) || 'Unknown';
-    // Clean display title — strip extension, underscores, known suffixes
-    const title = name
-      .replace(/\.[^.]+$/, '')
-      .replace(/_mobile_optimized|_mobile/gi, '')
-      .replace(new RegExp(`_(${PLATFORMS.join('|')})`, 'gi'), '')
-      .replace(new RegExp(`_(${INDUSTRIES.join('|')})`, 'gi'), '')
-      .replace(/_+/g, ' ')
-      .trim();
-    return { platform, industry, title };
+    const tokens = name.replace(/\.[^.]+$/, '').split('_');
+    let platform = 'Unknown', industry = 'Unknown', labels = [];
+    const used = new Set();
+    tokens.forEach((t, i) => {
+      const n = norm(t);
+      if (platform === 'Unknown' && PLATFORM_LOOKUP[n]) { platform = PLATFORM_LOOKUP[n].name; used.add(i); return; }
+      const ind = INDUSTRIES.find(x => norm(x) === n);
+      if (industry === 'Unknown' && ind) { industry = ind; used.add(i); return; }
+      const parts = t.split('-');
+      if (parts.length && parts.every(p => LABEL_LOOKUP[norm(p)])) {
+        labels = parts.map(p => LABEL_LOOKUP[norm(p)]);
+        used.add(i);
+      }
+    });
+    const title = tokens
+      .filter((t, i) => !used.has(i) && !/^(mobile|optimized)$/i.test(t))
+      .join(' ').trim();
+    return { platform, industry, labels, title };
+  }
+
+  function resolveAd(file) {
+    const parsed = parseFilename(file.name);
+    const o = OVERRIDES[file.name];
+    if (o) {
+      if (o.platform) parsed.platform = canonPlatform(o.platform);
+      if (o.industry) parsed.industry = o.industry;
+      if (Array.isArray(o.labels)) parsed.labels = o.labels.map(l => LABEL_LOOKUP[norm(l)] || l);
+      if (o.title) parsed.title = o.title;
+    }
+    return parsed;
+  }
+
+  function tagsHtml(platform, industry, labels) {
+    return `<span class="tag ${platformClass(platform)}">${esc(platform)}</span>` +
+           `<span class="tag ${industryClass(industry)}">${esc(industry)}</span>` +
+           labels.map(l => `<span class="tag ${labelClass(l)}">${esc(l)}</span>`).join('');
   }
 
   function buildCard(file) {
-    const { platform, industry, title } = parseFilename(file.name);
+    const { platform, industry, labels, title } = resolveAd(file);
     const imgUrl = file.download_url;
-
     const card = document.createElement('div');
     card.className = 'ad-card';
     card.dataset.platform = platform;
     card.dataset.industry = industry;
+    card.dataset.labels = labels.join('|');
     card.dataset.title = title;
     card.dataset.src = imgUrl;
-
     card.innerHTML = `
       <div class="ad-img-wrap">
-        <img src="${imgUrl}" alt="${title}" loading="lazy">
+        <img src="${esc(imgUrl)}" alt="${esc(title)}" loading="lazy">
       </div>
       <div class="ad-meta">
-        <div class="ad-tags">
-          <span class="tag ${ptClass[platform] || 'tag-platform'}">${platform}</span>
-          <span class="tag ${inClass[industry] || 'tag-platform'}">${industry}</span>
-        </div>
+        <div class="ad-tags">${tagsHtml(platform, industry, labels)}</div>
       </div>`;
-
     card.addEventListener('click', () => {
-      lbImg.innerHTML = `<img src="${imgUrl}" alt="${title}">`;
-      lbTags.innerHTML = `<span class="tag ${ptClass[platform]||''}">${platform}</span><span class="tag ${inClass[industry]||''}">${industry}</span>`;
+      lbImg.innerHTML = `<img src="${esc(imgUrl)}" alt="${esc(title)}">`;
+      lbTags.innerHTML = tagsHtml(platform, industry, labels);
       lbTitle.textContent = title;
       lbNote.textContent = '';
       lb.classList.add('open');
       document.body.style.overflow = 'hidden';
     });
-
     return card;
   }
 
   function filterCards() {
     let visible = 0;
     allCards.forEach(card => {
+      const labels = card.dataset.labels ? card.dataset.labels.split('|') : [];
       const show = (activePlatform === 'all' || card.dataset.platform === activePlatform) &&
-                   (activeIndustry === 'all' || card.dataset.industry === activeIndustry);
+                   (activeIndustry === 'all' || card.dataset.industry === activeIndustry) &&
+                   (activeLabel === 'all' || labels.includes(activeLabel));
       card.classList.toggle('hidden', !show);
       if (show) visible++;
     });
@@ -669,32 +745,50 @@
     grid.style.display = visible === 0 ? 'none' : '';
   }
 
+  // Core platforms always show; others appear once an ad uses them.
+  function renderPlatformChips() {
+    const present = new Set(allCards.map(c => c.dataset.platform));
+    const order = PLATFORM_DEFS.map(d => d.name);
+    const shown = PLATFORM_DEFS.filter(d => d.core || present.has(d.name)).map(d => d.name);
+    const extras = [...present].filter(p => p !== 'Unknown' && !order.includes(p)).sort();
+    const row = document.getElementById('platform-filters');
+    row.innerHTML = '<button class="chip active" data-platform="all">All</button>' +
+      [...shown, ...extras].map(p =>
+        `<button class="chip" data-platform="${esc(p)}"><span class="chip-pip" style="background:${platformColor(p)}"></span>${esc(p)}</button>`
+      ).join('');
+  }
+
+  async function loadOverrides() {
+    try {
+      const res = await fetch(OVERRIDES_URL, { cache: 'no-cache' });
+      if (res.ok) OVERRIDES = await res.json();
+    } catch (err) {
+      console.warn('No labels.json found; using filenames only.', err);
+    }
+  }
+
   async function loadAds() {
     try {
-      const res = await fetch(API_URL);
+      const [res] = await Promise.all([fetch(API_URL), loadOverrides()]);
       const files = await res.json();
       const images = files.filter(f => /\.(jpg|jpeg|png|gif|webp)$/i.test(f.name));
-
       loadingState.style.display = 'none';
-
       if (images.length === 0) {
         emptyState.style.display = 'block';
         countEl.textContent = '0';
+        renderPlatformChips();
         return;
       }
-
-      // Sort newest first (by filename timestamp if present, else alphabetical reverse)
+      // Newest first (by filename order, reversed)
       images.reverse();
-
       images.forEach(file => {
         const card = buildCard(file);
         allCards.push(card);
         grid.appendChild(card);
       });
-
+      renderPlatformChips();
       countEl.textContent = images.length;
       filterCards();
-
     } catch (err) {
       loadingState.style.display = 'none';
       emptyState.style.display = 'block';
@@ -702,23 +796,19 @@
     }
   }
 
-  document.getElementById('platform-filters').addEventListener('click', e => {
-    const chip = e.target.closest('[data-platform]');
-    if (!chip) return;
-    document.querySelectorAll('[data-platform]').forEach(c => c.classList.remove('active'));
-    chip.classList.add('active');
-    activePlatform = chip.dataset.platform;
-    filterCards();
-  });
-
-  document.getElementById('industry-filters').addEventListener('click', e => {
-    const chip = e.target.closest('[data-industry]');
-    if (!chip) return;
-    document.querySelectorAll('[data-industry]').forEach(c => c.classList.remove('active'));
-    chip.classList.add('active');
-    activeIndustry = chip.dataset.industry;
-    filterCards();
-  });
+  function wireFilter(containerId, dataKey, setter) {
+    document.getElementById(containerId).addEventListener('click', e => {
+      const chip = e.target.closest('.chip');
+      if (!chip) return;
+      document.querySelectorAll('#' + containerId + ' .chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      setter(chip.dataset[dataKey]);
+      filterCards();
+    });
+  }
+  wireFilter('platform-filters', 'platform', v => activePlatform = v);
+  wireFilter('industry-filters', 'industry', v => activeIndustry = v);
+  wireFilter('label-filters', 'label', v => activeLabel = v);
 
   document.getElementById('lb-close').addEventListener('click', closeLb);
   lb.addEventListener('click', e => { if (e.target === lb) closeLb(); });
@@ -729,6 +819,8 @@
     document.body.style.overflow = '';
   }
 
+  // Show the always-on platform buttons straight away, then load the ads.
+  renderPlatformChips();
   loadAds();
 </script>
 </body>
